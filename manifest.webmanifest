@@ -1,6 +1,6 @@
 {
-  "name": "Rally Board",
-  "short_name": "Rally Board",
+  "name": "Assetto Corsa Community",
+  "short_name": "ACC",
   "description": "Información oficial, comunicados y documentos del rally",
   "lang": "es",
   "start_url": "./index.html",
