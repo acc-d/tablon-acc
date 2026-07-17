@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta
-    name="apple-mobile-web-app-title"
-    content="Assetto Corsa Community"
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
   >
   <meta
     name="description"
@@ -17,7 +17,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Rally Board">
 
-  <title>Assetto Corsa Community</title>
+  <title>Rally Board</title>
 
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icons/icon-192.png">
@@ -28,10 +28,49 @@
 </head>
 
 <body>
+  <section id="access-screen" class="access-screen">
+    <form id="access-form" class="access-card">
+      <img
+        class="access-card__icon"
+        src="./icons/icon-192.png"
+        alt=""
+        width="84"
+        height="84"
+      >
+
+      <span class="hero__label">Acceso al evento</span>
+      <h1>Assetto Corsa Community</h1>
+      <p>Introduce el código del rally para abrir su tablón oficial.</p>
+
+      <label for="event-code">Código del rally</label>
+      <input
+        id="event-code"
+        type="text"
+        maxlength="40"
+        autocomplete="off"
+        autocapitalize="characters"
+        spellcheck="false"
+        placeholder="Ejemplo: RALLY2026"
+        required
+      >
+
+      <button id="access-button" type="submit">
+        Entrar
+      </button>
+
+      <p id="access-message" class="message" aria-live="polite"></p>
+    </form>
+  </section>
+
   <header class="hero">
     <div class="container hero__content">
       <div class="hero__topline">
-        <span class="hero__label">Información oficial</span>
+        <div class="hero__identity">
+          <span class="hero__label">Información oficial</span>
+          <button id="change-event-button" class="change-event-button" type="button">
+            Cambiar rally
+          </button>
+        </div>
 
         <button
           id="notifications-button"
