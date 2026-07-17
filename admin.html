@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Administración | Rally Board</title>
+
+  <link rel="stylesheet" href="./css/admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <header class="admin-header">
+    <div class="admin-container admin-header__content">
+      <div>
+        <span class="eyebrow">Rally Board</span>
+        <h1>Panel de administración</h1>
+      </div>
+
+      <button
+        id="logout-button"
+        class="button-secondary"
+        type="button"
+      >
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <main class="admin-container admin-main">
+    <section class="stats-grid" aria-label="Resumen">
+      <article class="stat-card">
+        <span class="stat-card__label">Comunicados</span>
+        <strong id="news-stat">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-card__label">Documentos</span>
+        <strong id="documents-stat">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span class="stat-card__label">Enlaces</span>
+        <strong id="links-stat">0</strong>
+      </article>
+    </section>
+
+    <section class="admin-card">
+      <span class="eyebrow">Gestión de contenido</span>
+
+      <div class="card-heading">
+        <div>
+          <h2 id="form-title">Publicar contenido</h2>
+          <p id="admin-email" class="session-info"></p>
+        </div>
+
+        <button
+          id="cancel-edit-button"
+          class="button-secondary"
+          type="button"
+          hidden
+        >
+          Cancelar edición
+        </button>
+      </div>
+
+      <form id="post-form">
+        <label for="title">Título</label>
+        <input
+          id="title"
+          type="text"
+          maxlength="150"
+          placeholder="Ejemplo: Orden de salida publicada"
+          required
+        >
+
+        <label for="type">Tipo de publicación</label>
+        <select id="type" required>
+          <option value="news">Comunicado</option>
+          <option value="document">Documento PDF</option>
+          <option value="link">Enlace</option>
+        </select>
+
+        <div id="category-area" hidden>
+          <label for="category">Categoría</label>
+          <select id="category">
+            <option value="">Cargando categorías…</option>
+          </select>
+        </div>
+
+        <label for="content">Contenido</label>
+        <textarea
+          id="content"
+          rows="7"
+          maxlength="5000"
+          placeholder="Escribe aquí el contenido..."
+        ></textarea>
+
+        <div id="pdf-area" hidden>
+          <label for="pdf">Archivo PDF</label>
+          <input
+            id="pdf"
+            type="file"
+            accept="application/pdf,.pdf"
+          >
+
+          <p id="current-pdf" class="field-help" hidden></p>
+        </div>
+
+        <div id="link-area" hidden>
+          <label for="url">Dirección web</label>
+          <input
+            id="url"
+            type="url"
+            maxlength="2000"
+            placeholder="https://ejemplo.com"
+          >
+        </div>
+
+        <button id="publish-button" type="submit">
+          Publicar
+        </button>
+      </form>
+
+      <p
+        id="publish-message"
+        class="message"
+        aria-live="polite"
+      ></p>
+    </section>
+
+    <section class="admin-card">
+      <div class="list-heading">
+        <div>
+          <span class="eyebrow">Contenido publicado</span>
+          <h2>Publicaciones</h2>
+        </div>
+
+        <button
+          id="reload-posts-button"
+          class="button-secondary"
+          type="button"
+        >
+          Actualizar
+        </button>
+      </div>
+
+      <div class="filters">
+        <label class="sr-only" for="search-posts">
+          Buscar publicaciones
+        </label>
+
+        <input
+          id="search-posts"
+          type="search"
+          placeholder="Buscar por título o contenido..."
+        >
+
+        <label class="sr-only" for="filter-type">
+          Filtrar por tipo
+        </label>
+
+        <select id="filter-type">
+          <option value="all">Todos los tipos</option>
+          <option value="news">Comunicados</option>
+          <option value="document">Documentos</option>
+          <option value="link">Enlaces</option>
+        </select>
+      </div>
+
+      <p
+        id="posts-message"
+        class="message"
+        aria-live="polite"
+      ></p>
+
+      <div id="admin-posts-list" class="admin-posts-list"></div>
+    </section>
+
+    <a class="secondary-link" href="./index.html">
+      Ver tablón público
+    </a>
+  </main>
+
+  <template id="admin-post-template">
+    <article class="admin-post">
+      <div class="admin-post__icon" aria-hidden="true"></div>
+
+      <div class="admin-post__body">
+        <div class="admin-post__heading">
+          <h3 class="admin-post__title"></h3>
+          <span class="admin-post__type"></span>
+        </div>
+
+        <p class="admin-post__content"></p>
+
+        <div class="admin-post__meta">
+          <span class="admin-post__category"></span>
+          <time class="admin-post__date"></time>
+        </div>
+      </div>
+
+      <div class="admin-post__actions">
+        <a
+          class="button-link admin-post__open"
+          target="_blank"
+          rel="noopener noreferrer"
+          hidden
+        >
+          Abrir
+        </a>
+
+        <button
+          class="button-secondary admin-post__edit"
+          type="button"
+        >
+          Editar
+        </button>
+
+        <button
+          class="button-danger admin-post__delete"
+          type="button"
+        >
+          Eliminar
+        </button>
+      </div>
+    </article>
+  </template>
+
+  <script type="module" src="./js/admin.js"></script>
+</body>
+</html>

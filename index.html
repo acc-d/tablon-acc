@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+  <meta
+    name="description"
+    content="Información oficial, comunicados y documentos del rally"
+  >
+  <meta name="theme-color" content="#081b32">
+  <meta name="background-color" content="#f4f6f8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rally Board">
+
+  <title>Rally Board</title>
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="stylesheet" href="./css/style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+  <header class="hero">
+    <div class="container hero__content">
+      <div class="hero__topline">
+        <span class="hero__label">Información oficial</span>
+
+        <button
+          id="notifications-button"
+          class="install-button"
+          type="button"
+        >
+          Activar avisos
+        </button>
+
+        <button
+          id="install-button"
+          class="install-button"
+          type="button"
+          hidden
+        >
+          Instalar app
+        </button>
+      </div>
+
+      <h1 id="event-name">Cargando rally…</h1>
+      <p id="event-details" class="hero__details"></p>
+    </div>
+  </header>
+
+  <main class="container page-content">
+    <div
+      id="update-banner"
+      class="update-banner"
+      role="status"
+      hidden
+    >
+      <span>Hay una nueva versión disponible.</span>
+      <button id="update-button" type="button">Actualizar ahora</button>
+    </div>
+
+    <div class="toolbar">
+      <nav class="tabs" aria-label="Secciones principales">
+        <button
+          id="announcements-tab"
+          class="tab is-active"
+          type="button"
+          data-view="announcements"
+          aria-selected="true"
+        >
+          Comunicados
+        </button>
+
+        <button
+          id="documents-tab"
+          class="tab"
+          type="button"
+          data-view="documents"
+          aria-selected="false"
+        >
+          Documentos
+        </button>
+      </nav>
+
+      <button id="refresh-button" class="refresh-button" type="button">
+        Actualizar
+      </button>
+    </div>
+
+    <div id="offline-notice" class="offline-notice" hidden>
+      Sin conexión. Se muestra la última versión disponible.
+    </div>
+
+    <div id="status" class="status" aria-live="polite">
+      Cargando información…
+    </div>
+
+    <section
+      id="announcements-view"
+      class="view"
+      aria-labelledby="announcements-title"
+    >
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__label">Tablón oficial</span>
+          <h2 id="announcements-title">Últimos comunicados</h2>
+        </div>
+      </div>
+
+      <div
+        id="announcements-list"
+        class="announcements"
+        aria-live="polite"
+      ></div>
+    </section>
+
+    <section
+      id="documents-view"
+      class="view"
+      aria-labelledby="documents-title"
+      hidden
+    >
+      <div class="section-heading">
+        <div>
+          <span class="section-heading__label">Archivo oficial</span>
+          <h2 id="documents-title">Documentos y enlaces</h2>
+        </div>
+      </div>
+
+      <div
+        id="folders-list"
+        class="folders"
+        aria-live="polite"
+      ></div>
+    </section>
+  </main>
+
+  <template id="announcement-template">
+    <article class="announcement-card">
+      <div class="announcement-card__meta">
+        <time class="announcement-card__date"></time>
+        <span class="new-badge" hidden>Nuevo</span>
+      </div>
+
+      <h3 class="announcement-card__title"></h3>
+      <p class="announcement-card__text"></p>
+    </article>
+  </template>
+
+  <template id="folder-template">
+    <article class="folder">
+      <button
+        class="folder__header"
+        type="button"
+        aria-expanded="false"
+      >
+        <span class="folder__icon" aria-hidden="true">📁</span>
+
+        <span class="folder__heading">
+          <span class="folder__title"></span>
+          <span class="folder__count"></span>
+        </span>
+
+        <span class="folder__chevron" aria-hidden="true">⌄</span>
+      </button>
+
+      <div class="folder__items" hidden></div>
+    </article>
+  </template>
+
+  <template id="document-template">
+    <a
+      class="document-item"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <span class="document-item__icon" aria-hidden="true"></span>
+
+      <span class="document-item__body">
+        <span class="document-item__title"></span>
+        <span class="document-item__description"></span>
+        <time class="document-item__date"></time>
+      </span>
+
+      <span class="new-badge" hidden>Nuevo</span>
+      <span class="document-item__arrow" aria-hidden="true">→</span>
+    </a>
+  </template>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
