@@ -390,23 +390,6 @@ async function loadPublicBoard() {
     cacheKey = `rally-board:${event.slug}`;
     accessScreen.hidden = true;
 
-    // Si el usuario ya concedió permiso, registramos automáticamente
-    // el mismo dispositivo para este rally. Esto es clave al cambiar
-    // de un rally a otro: el permiso del navegador es global, pero la
-    // suscripción de Supabase es por event_id.
-    if (Notification.permission === "granted") {
-      try {
-        await registerSubscriptionForCurrentEvent();
-      } catch (pushError) {
-        console.error(
-          "No se pudo registrar el dispositivo para este rally:",
-          pushError
-        );
-      }
-    }
-
-    updateNotificationButton();
-
     const [
       { data: posts, error: postsError },
       { data: categories, error: categoriesError }
@@ -480,58 +463,6 @@ function urlBase64ToUint8Array(base64String) {
   ));
 }
 
-async function getCurrentPushSubscription() {
-  if (
-    !("serviceWorker" in navigator) ||
-    !("PushManager" in window) ||
-    !("Notification" in window)
-  ) {
-    return null;
-  }
-
-  const registration = await navigator.serviceWorker.ready;
-  let subscription = await registration.pushManager.getSubscription();
-
-  if (!subscription) {
-    subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-    });
-  }
-
-  return subscription;
-}
-
-async function registerSubscriptionForCurrentEvent() {
-  if (!activeEvent || Notification.permission !== "granted") {
-    return false;
-  }
-
-  const subscription = await getCurrentPushSubscription();
-  if (!subscription) {
-    return false;
-  }
-
-  const subscriptionData = subscription.toJSON();
-
-  const { error } = await supabase
-    .from("push_subscriptions")
-    .insert({
-      event_id: activeEvent.id,
-      endpoint: subscriptionData.endpoint,
-      p256dh: subscriptionData.keys?.p256dh,
-      auth: subscriptionData.keys?.auth,
-      user_agent: navigator.userAgent
-    });
-
-  // 23505 = ya estaba suscrito a este mismo rally.
-  if (error && error.code !== "23505") {
-    throw error;
-  }
-
-  return true;
-}
-
 function updateNotificationButton() {
   if (
     !("serviceWorker" in navigator) ||
@@ -543,22 +474,20 @@ function updateNotificationButton() {
     return;
   }
 
-  if (Notification.permission === "granted") {
-    notificationsButton.textContent = activeEvent
-      ? "Avisos activados"
-      : "Avisos disponibles";
-    notificationsButton.disabled = !activeEvent;
+  if (window.Notification.permission === "granted") {
+    notificationsButton.textContent = "Avisos activados";
+    notificationsButton.disabled = true;
     return;
   }
 
-  if (Notification.permission === "denied") {
+  if (window.Notification.permission === "denied") {
     notificationsButton.textContent = "Avisos bloqueados";
     notificationsButton.disabled = true;
     return;
   }
 
   notificationsButton.textContent = "Activar avisos";
-  notificationsButton.disabled = !activeEvent;
+  notificationsButton.disabled = false;
 }
 
 async function enablePushNotifications() {
@@ -566,14 +495,41 @@ async function enablePushNotifications() {
   notificationsButton.textContent = "Activando…";
 
   try {
-    const permission = await Notification.requestPermission();
+    const permission = await window.Notification.requestPermission();
 
     if (permission !== "granted") {
       updateNotificationButton();
       return;
     }
 
-    await registerSubscriptionForCurrentEvent();
+    const registration = await navigator.serviceWorker.ready;
+    let subscription =
+      await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey:
+          urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+
+    const subscriptionData = subscription.toJSON();
+
+    const { error } = await supabase
+      .from("push_subscriptions")
+      .insert({
+        event_slug: activeEvent.slug,
+        endpoint: subscriptionData.endpoint,
+        p256dh: subscriptionData.keys?.p256dh,
+        auth: subscriptionData.keys?.auth,
+        user_agent: navigator.userAgent
+      });
+
+    if (error && error.code !== "23505") {
+      throw error;
+    }
+
     updateNotificationButton();
   } catch (error) {
     console.error("No se pudieron activar los avisos:", error);
