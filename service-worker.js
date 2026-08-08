@@ -1,4 +1,4 @@
-const CACHE_VERSION = "rally-board-v3-event-push";
+const CACHE_VERSION = "rally-board-v3-notification-fix";
 const APP_SHELL = [
   "./",
   "./index.html",
